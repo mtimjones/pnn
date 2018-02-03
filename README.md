@@ -1,1 +1,2 @@
-# pnn
+# Probabilistic Neural Network
+
