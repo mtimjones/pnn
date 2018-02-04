@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#if 1
+#define USE_ZOO_DATASET    1
+
+#if USE_ZOO_DATASET
 #define FEATURES	16
 #define CLASSES		 7
 
@@ -14,6 +16,9 @@ typedef struct dataset_t {
 } dataset_t;
 
 #define OBSERVATIONS	100
+
+// Classes are [1] Mammal, [2] Bird, [3] Reptile, [4] Fish
+//             [5] Amphibian, [6] Bug, [7] Invertebrate.
 
 dataset_t dataset[ OBSERVATIONS ] = 
 {
@@ -130,6 +135,10 @@ typedef struct dataset_t {
 } dataset_t;
 
 #define OBSERVATIONS	150
+
+// Iris Dataset.  
+// Classes are [1] Iris-setosa, [2] Iris-versicolor, [3] Iris-virginica.
+
 dataset_t dataset[ OBSERVATIONS ] = {
 { { 5.1,3.5,1.4,0.2} ,1 },
 { { 4.9,3.0,1.4,0.2} ,1 },
@@ -287,11 +296,9 @@ dataset_t dataset[ OBSERVATIONS ] = {
 
 #define SIGMA	((double)0.0292)
 
-#define SCALE( x )    (((double)(x) * 2.0) / 100.0)
-
 #define SQR( x )      ( ( x ) * ( x ) )
 
-
+// Determine class membership through winner-takes-all (Decision layer)
 int winner_takes_all( double *output )
 {
   int class, best = 0;
@@ -308,6 +315,7 @@ int winner_takes_all( double *output )
 }
 
 
+// PNN Classifier
 int pnn_classifier( dataset_t example )
 {
   int class, observation, feature, class_observations;
@@ -351,10 +359,11 @@ int main( void )
    for ( int i = 0 ; i < OBSERVATIONS ; i++ )
    {
       dataset[ i ].computed_class = pnn_classifier( dataset[ i ] );
-printf("Data %d, Class %d, Computed Class %d\n", i, dataset[ i ].class, dataset[ i ].computed_class );
+      printf( "Data %d, Class %d, Computed Class %d\n", 
+               i, dataset[ i ].class, dataset[ i ].computed_class );
    }
 
-#if 1
+#if USE_ZOO_DATASET
    // Emit the clusters
    for ( int class = 0 ; class < CLASSES ; class++ )
    {
@@ -368,11 +377,11 @@ printf("Data %d, Class %d, Computed Class %d\n", i, dataset[ i ].class, dataset[
       }
       printf("\n");
    }
-#endif
 
    dataset_t example = {"mystery", {0,0,1,0,0,1,0,1,1,1,0,0,4,1,0,0}, 7};
 
    printf("Classification %d\n", pnn_classifier( example ) );
+#endif
 
    return 0;
 }
