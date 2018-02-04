@@ -17,6 +17,24 @@ typedef struct dataset_t {
 
 #define OBSERVATIONS	100
 
+// Features are:
+//    [ 0] hair
+//    [ 1] feathers
+//    [ 2] eggs
+//    [ 3] milk
+//    [ 4] airborne
+//    [ 5] aquatic
+//    [ 6] predator
+//    [ 7] toothed
+//    [ 8] backbone
+//    [ 9] breathes
+//    [10] venomous
+//    [11] fins
+//    [12] legs
+//    [13] tail
+//    [14] domestic
+//    [15] catsize
+
 // Classes are [1] Mammal, [2] Bird, [3] Reptile, [4] Fish
 //             [5] Amphibian, [6] Bug, [7] Invertebrate.
 
@@ -299,17 +317,17 @@ dataset_t dataset[ OBSERVATIONS ] = {
 #define SQR( x )      ( ( x ) * ( x ) )
 
 // Determine class membership through winner-takes-all (Decision layer)
-int winner_takes_all( double *output )
+int winner_takes_all( double *summation )
 {
    int class, best = 0;
-   double max = output[0];
+   double max = summation[0];
 
    for (class = 1 ; class < CLASSES ; class++)
    {
-      if (output[class] > max)
+      if (summation[class] > max)
       {
          best = class;
-         max = output[class];
+         max = summation[class];
       }
    }
  
@@ -322,11 +340,11 @@ int pnn_classifier( dataset_t example )
 {
    int class, observation, feature, class_observations;
    double product;
-   double output[CLASSES];
+   double summation[CLASSES];
 
    for ( class = 1 ; class <= CLASSES ; class++ )
    {
-      output[class-1] = 0.0;
+      summation[class-1] = 0.0;
       class_observations = 0;
 
       for ( observation = 0 ; observation < OBSERVATIONS ; observation++ )
@@ -343,15 +361,15 @@ int pnn_classifier( dataset_t example )
               product += SQR( ( example.features[feature] - dataset[observation].features[feature] ) );
             }
 
-            output[class-1] += exp( -( product / ( 2.0 * SQR( SIGMA ) ) ) );
+            summation[class-1] += exp( -( product / ( 2.0 * SQR( SIGMA ) ) ) );
          }
 
       }
 
-      output[class-1] /= (double)class_observations;
+      summation[class-1] /= (double)class_observations;
    }
 
-   return winner_takes_all( output ) + 1;
+   return winner_takes_all( summation ) + 1;
 }
 
 
@@ -380,7 +398,8 @@ int main( void )
       printf("\n");
    }
 
-   dataset_t example = {"mystery", {0,0,1,0,0,1,0,1,1,1,0,0,4,1,0,0}, 7};
+   // 6 flea
+   dataset_t example = {"mystery",     {0,0,1,0,0,0,0,1,0,1,0,0,6,0,0,0}, 0};
 
    printf("Classification %d\n", pnn_classifier( example ) );
 #endif
