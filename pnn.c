@@ -19,8 +19,8 @@ typedef struct dataset_t {
 
 // Features are:
 //    [ 0] hair
-//    [ 1] feathers
-//    [ 2] eggs
+//    [ 1] feathers 
+//    [ 2] eggs 
 //    [ 3] milk
 //    [ 4] airborne
 //    [ 5] aquatic
@@ -403,9 +403,14 @@ int main( void )
    }
 
    // 6 flea
-   dataset_t example = {"mystery",     {0,0,1,0,0,0,0,1,0,1,0,0,6,0,0,0}, 0};
+   dataset_t example1 = {"flea with teeth", {0,0,1,0,0,0,0,1,0,1,0,0,6,0,0,0}, 0};
+   printf("Prediction %d for %s\n", pnn_classifier( example1 ), example1.name );
 
-   printf("Classification %d\n", pnn_classifier( example ) );
+   dataset_t example2 = {"predator with hair", {0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0}, 0};
+   printf("Prediction %d for %s\n", pnn_classifier( example2 ), example2.name );
+
+   dataset_t example3 = {"six legged aquatic egg layer", {0,0,1,0,0,1,0,0,0,0,0,0,6,0,0,0}, 0};
+   printf("Prediction %d for %s\n", pnn_classifier( example3 ), example3.name );
 #endif
 
    return 0;
