@@ -301,55 +301,57 @@ dataset_t dataset[ OBSERVATIONS ] = {
 // Determine class membership through winner-takes-all (Decision layer)
 int winner_takes_all( double *output )
 {
-  int class, best = 0;
-  double max = output[0];
+   int class, best = 0;
+   double max = output[0];
 
-  for (class = 1 ; class < CLASSES ; class++) {
-    if (output[class] > max) {
-      best = class;
-      max = output[class];
-    }
-  }
-
-  return best;
+   for (class = 1 ; class < CLASSES ; class++)
+   {
+      if (output[class] > max)
+      {
+         best = class;
+         max = output[class];
+      }
+   }
+ 
+   return best;
 }
 
 
 // PNN Classifier
 int pnn_classifier( dataset_t example )
 {
-  int class, observation, feature, class_observations;
-  double product;
-  double output[CLASSES];
+   int class, observation, feature, class_observations;
+   double product;
+   double output[CLASSES];
 
-  for ( class = 1 ; class <= CLASSES ; class++ ) {
+   for ( class = 1 ; class <= CLASSES ; class++ )
+   {
+      output[class-1] = 0.0;
+      class_observations = 0;
 
-    output[class-1] = 0.0;
-    class_observations = 0;
-
-    for ( observation = 0 ; observation < OBSERVATIONS ; observation++ ) {
-
-      product = 0.0;
-
-      // Train the class output node based upon samples for this class.
-      if ( dataset[observation].class == class )
+      for ( observation = 0 ; observation < OBSERVATIONS ; observation++ )
       {
-         class_observations++;
+         product = 0.0;
 
-         // Product of the example vector and the input feature vector
-         for ( feature = 0 ; feature < FEATURES ; feature++ ) {
-           product += SQR( ( example.features[feature] - dataset[observation].features[feature] ) );
+         // Train the class output node based upon samples for this class.
+         if ( dataset[observation].class == class )
+         {
+            class_observations++;
+
+            // Product of the example vector and the input feature vector
+            for ( feature = 0 ; feature < FEATURES ; feature++ ) {
+              product += SQR( ( example.features[feature] - dataset[observation].features[feature] ) );
+            }
+
+            output[class-1] += exp( -( product / ( 2.0 * SQR( SIGMA ) ) ) );
          }
 
-         output[class-1] += exp( -( product / ( 2.0 * SQR( SIGMA ) ) ) );
       }
 
-    }
+      output[class-1] /= (double)class_observations;
+   }
 
-    output[class-1] /= (double)class_observations;
-  }
-
-  return winner_takes_all( output ) + 1;
+   return winner_takes_all( output ) + 1;
 }
 
 
