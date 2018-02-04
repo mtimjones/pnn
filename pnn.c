@@ -331,7 +331,7 @@ int winner_takes_all( double *summation )
       }
    }
  
-   return best;
+   return best + 1;
 }
 
 
@@ -342,11 +342,13 @@ int pnn_classifier( dataset_t example )
    double product;
    double summation[CLASSES];
 
+   // Iterate the neurons in the summation layer.
    for ( class = 1 ; class <= CLASSES ; class++ )
    {
       summation[class-1] = 0.0;
       class_observations = 0;
 
+      // Iterate the dataset observations (pattern layer).
       for ( observation = 0 ; observation < OBSERVATIONS ; observation++ )
       {
          product = 0.0;
@@ -356,11 +358,13 @@ int pnn_classifier( dataset_t example )
          {
             class_observations++;
 
-            // Product of the example vector and the input feature vector
+            // Square product of the example vector and the input feature vector
             for ( feature = 0 ; feature < FEATURES ; feature++ ) {
-              product += SQR( ( example.features[feature] - dataset[observation].features[feature] ) );
+              product += SQR( ( example.features[feature] - 
+                                dataset[observation].features[feature] ) );
             }
 
+            // Apply a smoothing factor and sum into the class neuron.
             summation[class-1] += exp( -( product / ( 2.0 * SQR( SIGMA ) ) ) );
          }
 
@@ -369,7 +373,7 @@ int pnn_classifier( dataset_t example )
       summation[class-1] /= (double)class_observations;
    }
 
-   return winner_takes_all( summation ) + 1;
+   return winner_takes_all( summation );
 }
 
 
